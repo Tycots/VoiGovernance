@@ -56,7 +56,7 @@ export class VoiGovernance extends Contract {
 
     const resolutionLabel = resolution === Uint64(1) ? Bytes('APPROVED') : Bytes('REJECTED')
 
-    // Log resolution message with full details (similar to PROPOSAL_FINALIZED format)
+    // Keep the identifier event compatible with council vote log consumers.
     log(
       op.concat(
         Bytes('PROPOSAL_RESOLVED_ID:'),
@@ -72,7 +72,32 @@ export class VoiGovernance extends Contract {
                   op.itob(nay),
                   op.concat(
                     Bytes('|A:'),
-                    op.concat(op.itob(abstain), op.concat(Bytes('|Reason:'), op.concat(Bytes('Admin Resolution: '), resolutionLabel)))
+                    op.concat(op.itob(abstain), op.concat(Bytes('|Reason:'), resolutionLabel))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+
+    log(
+      op.concat(
+        Bytes('PROPOSAL_RESOLUTION:'),
+        op.concat(
+          op.itob(proposalId),
+          op.concat(
+            Bytes('|Y:'),
+            op.concat(
+              op.itob(yea),
+              op.concat(
+                Bytes('|N:'),
+                op.concat(
+                  op.itob(nay),
+                  op.concat(
+                    Bytes('|A:'),
+                    op.concat(op.itob(abstain), op.concat(Bytes('|Reason:Admin Resolution: '), resolutionLabel))
                   )
                 )
               )

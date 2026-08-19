@@ -1,0 +1,12 @@
+{
+  "name": "VoiGovernance",
+  "methods": [
+    { "name": "changeAdmin", "args": [{ "type": "address", "name": "newAdmin" }], "returns": { "type": "void" } },
+    { "name": "updateWhitelist", "args": [{ "type": "address[]", "name": "newWhitelist" }], "returns": { "type": "void" } },
+    { "name": "initializeProposal", "args": [{ "type": "uint64", "name": "slot" }, { "type": "uint64", "name": "proposalId" }, { "type": "uint64", "name": "duration" }], "returns": { "type": "void" } },
+    { "name": "castVote", "args": [{ "type": "uint64", "name": "slot" }, { "type": "uint64", "name": "voteType" }], "returns": { "type": "void" } },
+    { "name": "evaluateExpiration", "args": [{ "type": "uint64", "name": "slot" }], "returns": { "type": "void" } },
+    { "name": "resolveProposal", "args": [{ "type": "uint64", "name": "slot" }, { "type": "uint64", "name": "resolution" }], "returns": { "type": "void" } },
+    { "name": "terminateProposal", "args": [{ "type": "uint64", "name": "slot" }, { "type": "byte[]", "name": "reason" }], "returns": { "type": "void" } }
+  ]
+}
