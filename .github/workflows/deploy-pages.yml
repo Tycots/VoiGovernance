@@ -29,6 +29,9 @@ jobs:
       - name: Build
         run: npm ci && npm run build
       - name: Publish gh-pages branch
-        run: npx gh-pages -d dist -r "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npx gh-pages -d dist -r "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
