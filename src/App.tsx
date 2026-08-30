@@ -460,8 +460,8 @@ function VotePage() {
   const isAdmin = Boolean(
     activeAddress && globalState?.admin === activeAddress,
   );
-  const resolvableProposals = proposals.filter(
-    (proposal) => proposal.exists && !proposal.active && proposal.proposalId > 0,
+  const adminActionableProposals = proposals.filter(
+    (proposal) => proposal.exists && proposal.proposalId > 0,
   );
   const voterIndex = useMemo(
     () =>
@@ -603,19 +603,22 @@ function VotePage() {
           </span>
         </div>
       )}
-      {isAdmin && resolvableProposals.length > 0 && (
+      {isAdmin && adminActionableProposals.length > 0 && (
         <section className="panel active-admin">
           <div className="panel-title">
             <span className="step">03</span>
             <div>
               <h2>Resolve proposals</h2>
-              <p>Record the council outcome after voting is complete.</p>
+              <p>
+                Admin action is available while the proposal is active or after
+                the vote window closes.
+              </p>
             </div>
           </div>
-          {resolvableProposals.map((proposal) => (
+          {adminActionableProposals.map((proposal) => (
             <div className="admin-row" key={proposal.slot}>
               <span>
-                Slot {proposal.slot} · Proposal #{proposal.proposalId} · Y {proposal.yea} / N {proposal.nay} / A {proposal.abstain}
+                Slot {proposal.slot} · Proposal #{proposal.proposalId} · {proposal.active ? "Active" : "Closed"} · Y {proposal.yea} / N {proposal.nay} / A {proposal.abstain}
               </span>
               <div className="vote-buttons">
                 <button
