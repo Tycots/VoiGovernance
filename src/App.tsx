@@ -457,6 +457,12 @@ function VotePage() {
     run: () => Promise<string>;
     success: string;
   } | null>(null);
+  const isAdmin = Boolean(
+    activeAddress && globalState?.admin === activeAddress,
+  );
+  const resolvableProposals = proposals.filter(
+    (proposal) => proposal.exists && !proposal.active && proposal.proposalId > 0,
+  );
   const voterIndex = useMemo(
     () =>
       activeAddress && globalState
@@ -487,6 +493,31 @@ function VotePage() {
     }
   };
   const active = proposals.filter((proposal) => proposal.active);
+  const resolve = async (proposalSlot: number, resolution: number) => {
+    if (!activeAddress) return;
+    setBusy(proposalSlot);
+    setMessage(null);
+    try {
+      const tx = await resolveProposal(
+        proposalSlot,
+        resolution,
+        activeAddress,
+        transactionSigner,
+      );
+      setMessage({
+        type: "ok",
+        text: `Proposal ${resolution === 1 ? "approved" : "rejected"}. Tx: ${tx}`,
+      });
+      await refresh();
+    } catch (err) {
+      setMessage({
+        type: "err",
+        text: err instanceof Error ? err.message : "Resolution failed",
+      });
+    } finally {
+      setBusy(null);
+    }
+  };
   const requestVote = (slot: number, type: number) => {
     const proposal = proposals.find((item) => item.slot === slot);
     if (!activeAddress || !proposal) return;
@@ -571,6 +602,40 @@ function VotePage() {
             one.
           </span>
         </div>
+      )}
+      {isAdmin && resolvableProposals.length > 0 && (
+        <section className="panel active-admin">
+          <div className="panel-title">
+            <span className="step">03</span>
+            <div>
+              <h2>Resolve proposals</h2>
+              <p>Record the council outcome after voting is complete.</p>
+            </div>
+          </div>
+          {resolvableProposals.map((proposal) => (
+            <div className="admin-row" key={proposal.slot}>
+              <span>
+                Slot {proposal.slot} · Proposal #{proposal.proposalId} · Y {proposal.yea} / N {proposal.nay} / A {proposal.abstain}
+              </span>
+              <div className="vote-buttons">
+                <button
+                  className="button button-yea button-small"
+                  disabled={Boolean(busy) || !isAdmin}
+                  onClick={() => void resolve(proposal.slot, 1)}
+                >
+                  {busy === proposal.slot ? "Saving..." : "Approve"}
+                </button>
+                <button
+                  className="button button-nay button-small"
+                  disabled={Boolean(busy) || !isAdmin}
+                  onClick={() => void resolve(proposal.slot, 2)}
+                >
+                  {busy === proposal.slot ? "Saving..." : "Reject"}
+                </button>
+              </div>
+            </div>
+          ))}
+        </section>
       )}
       {pendingAction && activeAddress && (
         <TransactionConfirmModal
