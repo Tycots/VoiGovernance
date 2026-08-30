@@ -3,6 +3,6 @@ import react from "@vitejs/plugin-react";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 export default defineConfig({
-  base: "/VoiGovernance/",
+  base: "./",
   plugins: [react(), nodePolyfills({ protocolImports: true })],
 });
