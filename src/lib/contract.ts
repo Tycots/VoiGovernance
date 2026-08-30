@@ -209,18 +209,26 @@ export const castVote = (
     boxNames: [slotBoxName(slot), whitelistBoxName()],
   });
 
+export const resolveExpiredProposal = (
+  slot: number,
+  resolution: number,
+  sender: string,
+  signer: TransactionSigner,
+) =>
+  sendContractCall({
+    methodName: "resolveExpiredProposal",
+    methodArgs: [slot, resolution],
+    sender,
+    signer,
+    boxNames: [slotBoxName(slot)],
+  });
+
 export const evaluateExpiration = (
   slot: number,
   sender: string,
   signer: TransactionSigner,
 ) =>
-  sendContractCall({
-    methodName: "evaluateExpiration",
-    methodArgs: [slot],
-    sender,
-    signer,
-    boxNames: [slotBoxName(slot)],
-  });
+  resolveExpiredProposal(slot, 1, sender, signer);
 
 export const resolveProposal = (
   slot: number,
