@@ -1,0 +1,1300 @@
+#pragma version 10
+#pragma typetrack false
+
+// @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
+main:
+    intcblock 1 0 8 2
+    bytecblock "admin" "maxSlots" "\x01" "whitelist" "slot_"
+    txn ApplicationID
+    bnz main_after_if_else@2
+    // contract.algo.ts:44
+    // admin = GlobalState<Account>({ initialValue: Txn.sender })
+    bytec_0 // "admin"
+    txn Sender
+    app_global_put
+    // contract.algo.ts:47
+    // maxSlots = GlobalState<uint64>({ initialValue: Uint64(10) })
+    bytec_1 // "maxSlots"
+    pushint 10 // 10
+    app_global_put
+
+main_after_if_else@2:
+    // contract.algo.ts:42
+    // export class VoiGovernance extends Contract {
+    txn NumAppArgs
+    bz main___algots__.defaultCreate@16
+    txn OnCompletion
+    !
+    assert // OnCompletion must be NoOp
+    txn ApplicationID
+    assert
+    pushbytess 0x49841757 0x78d4fa9f 0xcbf30f76 0xa522c3c4 0xa778ac87 0x28a6d6a2 0xf620dc88 // method "changeAdmin(address)void", method "updateWhitelist(address[])void", method "initializeProposal(uint64,uint64,uint64)void", method "castVote(uint64,uint64)void", method "resolveProposal(uint64,uint64)void", method "resolveExpiredProposal(uint64,uint64)void", method "terminateProposal(uint64,byte[])void"
+    txna ApplicationArgs 0
+    match changeAdmin updateWhitelist initializeProposal castVote resolveProposal resolveExpiredProposal terminateProposal
+    err
+
+main___algots__.defaultCreate@16:
+    // contract.algo.ts:42
+    // export class VoiGovernance extends Contract {
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    assert // OnCompletion must be NoOp && can only call when creating
+    intc_0 // 1
+    return
+
+
+// contract.algo.ts::padNumber(n: uint64, minLength: uint64) -> bytes:
+padNumber:
+    // contract.algo.ts:18
+    // function padNumber(n: uint64, minLength: uint64): bytes {
+    proto 2 1
+    pushbytes ""
+    // contract.algo.ts:19
+    // let str: bytes = Bytes('')
+    dup
+    // contract.algo.ts:22
+    // if (temp === Uint64(0)) {
+    frame_dig -2
+    bnz padNumber_else_body@2
+    // contract.algo.ts:23
+    // str = Bytes('0')
+    pushbytes "0"
+    frame_bury 1
+
+padNumber_while_top@7:
+    // contract.algo.ts:35
+    // while (op.len(str) < minLength) {
+    frame_dig 1
+    len
+    frame_dig -1
+    <
+    // contract.algo.ts:35-37
+    // while (op.len(str) < minLength) {
+    //   str = op.concat(Bytes('0'), str)
+    // }
+    bz padNumber_after_while@9
+    // contract.algo.ts:36
+    // str = op.concat(Bytes('0'), str)
+    pushbytes "0"
+    frame_dig 1
+    concat
+    frame_bury 1
+    b padNumber_while_top@7
+
+padNumber_after_while@9:
+    // contract.algo.ts:39
+    // return str
+    frame_dig 1
+    frame_bury 0
+    retsub
+
+padNumber_else_body@2:
+    frame_dig -2
+    frame_bury 0
+
+padNumber_while_top@3:
+    // contract.algo.ts:25-31
+    // while (temp > Uint64(0)) {
+    //   const digit: uint64 = temp % Uint64(10)
+    //   // Explicitly type asciiDigit as bytes and pass explicit uint64 variables to op.extract
+    //   const asciiDigit: bytes = op.extract(Bytes('0123456789'), digit, Uint64(1))
+    //   str = op.concat(asciiDigit, str)
+    //   temp = temp / Uint64(10)
+    // }
+    frame_dig 0
+    bz padNumber_while_top@7
+    // contract.algo.ts:26
+    // const digit: uint64 = temp % Uint64(10)
+    frame_dig 0
+    dup
+    pushint 10 // 10
+    %
+    // contract.algo.ts:28
+    // const asciiDigit: bytes = op.extract(Bytes('0123456789'), digit, Uint64(1))
+    pushbytes "0123456789"
+    swap
+    intc_0 // 1
+    extract3
+    // contract.algo.ts:29
+    // str = op.concat(asciiDigit, str)
+    frame_dig 1
+    concat
+    frame_bury 1
+    // contract.algo.ts:30
+    // temp = temp / Uint64(10)
+    pushint 10 // 10
+    /
+    frame_bury 0
+    b padNumber_while_top@3
+
+
+// contract.algo.ts::VoiGovernance.changeAdmin[routing]() -> void:
+changeAdmin:
+    // contract.algo.ts:55
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 32 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // contract.algo.ts:57
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can change admin')
+    txn Sender
+    intc_1 // 0
+    // contract.algo.ts:44
+    // admin = GlobalState<Account>({ initialValue: Txn.sender })
+    bytec_0 // "admin"
+    // contract.algo.ts:57
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can change admin')
+    app_global_get_ex
+    assert // check GlobalState exists
+    ==
+    assert // Unauthorized: Only admin can change admin
+    // contract.algo.ts:44
+    // admin = GlobalState<Account>({ initialValue: Txn.sender })
+    bytec_0 // "admin"
+    // contract.algo.ts:58
+    // this.admin.value = newAdmin
+    swap
+    app_global_put
+    // contract.algo.ts:55
+    // @abimethod()
+    intc_0 // 1
+    return
+
+
+// contract.algo.ts::VoiGovernance.updateWhitelist[routing]() -> void:
+updateWhitelist:
+    // contract.algo.ts:61
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    dup
+    pushint 32 // 32
+    *
+    intc_3 // 2
+    +
+    dig 2
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<account>
+    // contract.algo.ts:63
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can update whitelist')
+    txn Sender
+    intc_1 // 0
+    // contract.algo.ts:44
+    // admin = GlobalState<Account>({ initialValue: Txn.sender })
+    bytec_0 // "admin"
+    // contract.algo.ts:63
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can update whitelist')
+    app_global_get_ex
+    assert // check GlobalState exists
+    ==
+    assert // Unauthorized: Only admin can update whitelist
+    // contract.algo.ts:64
+    // assert(Uint64(newWhitelist.length) <= this.maxSlots.value, 'Whitelist cannot exceed 10 wallets')
+    intc_1 // 0
+    // contract.algo.ts:47
+    // maxSlots = GlobalState<uint64>({ initialValue: Uint64(10) })
+    bytec_1 // "maxSlots"
+    // contract.algo.ts:64
+    // assert(Uint64(newWhitelist.length) <= this.maxSlots.value, 'Whitelist cannot exceed 10 wallets')
+    app_global_get_ex
+    assert // check GlobalState exists
+    <=
+    assert // Whitelist cannot exceed 10 wallets
+    // contract.algo.ts:66
+    // this.whitelistBox('whitelist').value = [...newWhitelist]
+    bytec_3 // "whitelist"
+    box_del
+    pop
+    bytec_3 // "whitelist"
+    swap
+    box_put
+    // contract.algo.ts:61
+    // @abimethod()
+    intc_0 // 1
+    return
+
+
+// contract.algo.ts::VoiGovernance.initializeProposal[routing]() -> void:
+initializeProposal:
+    // contract.algo.ts:69
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    swap
+    txna ApplicationArgs 3
+    dup
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    swap
+    // contract.algo.ts:71
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can initialize proposals')
+    txn Sender
+    intc_1 // 0
+    // contract.algo.ts:44
+    // admin = GlobalState<Account>({ initialValue: Txn.sender })
+    bytec_0 // "admin"
+    // contract.algo.ts:71
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can initialize proposals')
+    app_global_get_ex
+    assert // check GlobalState exists
+    ==
+    assert // Unauthorized: Only admin can initialize proposals
+    // contract.algo.ts:72
+    // assert(slot < this.maxSlots.value, 'Invalid slot index: Must be 0-9')
+    intc_1 // 0
+    // contract.algo.ts:47
+    // maxSlots = GlobalState<uint64>({ initialValue: Uint64(10) })
+    bytec_1 // "maxSlots"
+    // contract.algo.ts:72
+    // assert(slot < this.maxSlots.value, 'Invalid slot index: Must be 0-9')
+    app_global_get_ex
+    assert // check GlobalState exists
+    dig 1
+    >
+    assert // Invalid slot index: Must be 0-9
+    // contract.algo.ts:75
+    // if (this.slots(slot).exists) {
+    itob
+    // contract.algo.ts:50
+    // slots = BoxMap<uint64, bytes>({ keyPrefix: 'slot_' })
+    bytec 4 // "slot_"
+    swap
+    concat
+    dup
+    // contract.algo.ts:75
+    // if (this.slots(slot).exists) {
+    box_len
+    bury 1
+    bz initializeProposal_after_if_else@3
+    // contract.algo.ts:76
+    // const data = this.slots(slot).value
+    dup
+    box_get
+    assert // Box must have value
+    // contract.algo.ts:77
+    // const statusByte = op.substring(data, 0, 1)
+    substring 0 1
+    // contract.algo.ts:78
+    // assert(statusByte !== Bytes('\x01'), 'Slot is currently active with another proposal')
+    bytec_2 // "\x01"
+    !=
+    assert // Slot is currently active with another proposal
+
+initializeProposal_after_if_else@3:
+    // contract.algo.ts:81
+    // const expiration: uint64 = Global.latestTimestamp + duration
+    global LatestTimestamp
+    dig 2
+    +
+    // contract.algo.ts:87
+    // op.itob(proposalId),
+    dig 3
+    itob
+    // contract.algo.ts:89
+    // op.itob(Uint64(0)), // Yea
+    intc_1 // 0
+    itob
+    // contract.algo.ts:95
+    // op.itob(expiration), // Expiration timestamp
+    uncover 2
+    itob
+    // contract.algo.ts:94-97
+    // op.concat(
+    //   op.itob(expiration), // Expiration timestamp
+    //   op.itob(Uint64(0))   // Vote mask
+    // )
+    dig 1
+    concat
+    // contract.algo.ts:92-98
+    // op.concat(
+    //   op.itob(Uint64(0)), // Abstain
+    //   op.concat(
+    //     op.itob(expiration), // Expiration timestamp
+    //     op.itob(Uint64(0))   // Vote mask
+    //   )
+    // )
+    dig 1
+    swap
+    concat
+    // contract.algo.ts:90-99
+    // op.concat(
+    //   op.itob(Uint64(0)), // Nay
+    //   op.concat(
+    //     op.itob(Uint64(0)), // Abstain
+    //     op.concat(
+    //       op.itob(expiration), // Expiration timestamp
+    //       op.itob(Uint64(0))   // Vote mask
+    //     )
+    //   )
+    // )
+    dig 1
+    swap
+    concat
+    // contract.algo.ts:88-100
+    // op.concat(
+    //   op.itob(Uint64(0)), // Yea
+    //   op.concat(
+    //     op.itob(Uint64(0)), // Nay
+    //     op.concat(
+    //       op.itob(Uint64(0)), // Abstain
+    //       op.concat(
+    //         op.itob(expiration), // Expiration timestamp
+    //         op.itob(Uint64(0))   // Vote mask
+    //       )
+    //     )
+    //   )
+    // )
+    concat
+    // contract.algo.ts:86-101
+    // op.concat(
+    //   op.itob(proposalId),
+    //   op.concat(
+    //     op.itob(Uint64(0)), // Yea
+    //     op.concat(
+    //       op.itob(Uint64(0)), // Nay
+    //       op.concat(
+    //         op.itob(Uint64(0)), // Abstain
+    //         op.concat(
+    //           op.itob(expiration), // Expiration timestamp
+    //           op.itob(Uint64(0))   // Vote mask
+    //         )
+    //       )
+    //     )
+    //   )
+    // )
+    concat
+    // contract.algo.ts:85
+    // Bytes('\x01'),
+    bytec_2 // "\x01"
+    // contract.algo.ts:84-102
+    // const payload = op.concat(
+    //   Bytes('\x01'),
+    //   op.concat(
+    //     op.itob(proposalId),
+    //     op.concat(
+    //       op.itob(Uint64(0)), // Yea
+    //       op.concat(
+    //         op.itob(Uint64(0)), // Nay
+    //         op.concat(
+    //           op.itob(Uint64(0)), // Abstain
+    //           op.concat(
+    //             op.itob(expiration), // Expiration timestamp
+    //             op.itob(Uint64(0))   // Vote mask
+    //           )
+    //         )
+    //       )
+    //     )
+    //   )
+    // )
+    swap
+    concat
+    // contract.algo.ts:104
+    // this.slots(slot).value = payload
+    dig 1
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // contract.algo.ts:69
+    // @abimethod()
+    intc_0 // 1
+    return
+
+
+// contract.algo.ts::VoiGovernance.castVote[routing]() -> void:
+castVote:
+    pushbytes ""
+    dupn 6
+    // contract.algo.ts:107
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    swap
+    // contract.algo.ts:109
+    // assert(slot < this.maxSlots.value, 'Invalid slot index')
+    intc_1 // 0
+    // contract.algo.ts:47
+    // maxSlots = GlobalState<uint64>({ initialValue: Uint64(10) })
+    bytec_1 // "maxSlots"
+    // contract.algo.ts:109
+    // assert(slot < this.maxSlots.value, 'Invalid slot index')
+    app_global_get_ex
+    assert // check GlobalState exists
+    dig 1
+    >
+    assert // Invalid slot index
+    // contract.algo.ts:110
+    // assert(this.slots(slot).exists, 'Proposal slot not initialized')
+    itob
+    // contract.algo.ts:50
+    // slots = BoxMap<uint64, bytes>({ keyPrefix: 'slot_' })
+    bytec 4 // "slot_"
+    swap
+    concat
+    dup
+    // contract.algo.ts:110
+    // assert(this.slots(slot).exists, 'Proposal slot not initialized')
+    box_len
+    bury 1
+    assert // Proposal slot not initialized
+    // contract.algo.ts:111
+    // assert(this.whitelistBox('whitelist').exists, 'Whitelist box not initialized')
+    bytec_3 // "whitelist"
+    box_len
+    bury 1
+    assert // Whitelist box not initialized
+    // contract.algo.ts:114
+    // let isWhitelisted = false
+    intc_1 // 0
+    // contract.algo.ts:115
+    // let voterIndex: uint64 = Uint64(0)
+    dupn 2
+
+castVote_while_top@2:
+    // contract.algo.ts:113
+    // const whitelist = [...this.whitelistBox('whitelist').value]
+    bytec_3 // "whitelist"
+    // contract.algo.ts:117
+    // for (let i: uint64 = 0; i < whitelist.length; i++) {
+    intc_1 // 0
+    intc_3 // 2
+    box_extract
+    btoi
+    dig 1
+    >
+    bz castVote_block@7
+    // contract.algo.ts:118
+    // if (whitelist[i] === Txn.sender) {
+    dup
+    pushint 32 // 32
+    *
+    intc_3 // 2
+    +
+    // contract.algo.ts:113
+    // const whitelist = [...this.whitelistBox('whitelist').value]
+    bytec_3 // "whitelist"
+    // contract.algo.ts:118
+    // if (whitelist[i] === Txn.sender) {
+    swap
+    pushint 32 // 32
+    box_extract
+    txn Sender
+    ==
+    bz castVote_after_if_else@5
+    // contract.algo.ts:119
+    // isWhitelisted = true
+    intc_0 // 1
+    bury 3
+    dup
+    bury 2
+
+castVote_block@7:
+    // contract.algo.ts:125
+    // assert(isWhitelisted, 'Unauthorized: Sender wallet is not whitelisted')
+    dig 2
+    assert // Unauthorized: Sender wallet is not whitelisted
+    // contract.algo.ts:127
+    // const data = this.slots(slot).value
+    dig 3
+    box_get
+    assert // Box must have value
+    // contract.algo.ts:128
+    // assert(op.substring(data, 0, 1) === Bytes('\x01'), 'Proposal is not active')
+    dup
+    substring 0 1
+    bytec_2 // "\x01"
+    ==
+    assert // Proposal is not active
+    // contract.algo.ts:130
+    // const proposalId = op.btoi(op.substring(data, 1, 9))
+    dup
+    substring 1 9
+    btoi
+    bury 11
+    // contract.algo.ts:131
+    // let yea = op.btoi(op.substring(data, 9, 17))
+    dup
+    substring 9 17
+    btoi
+    bury 8
+    // contract.algo.ts:132
+    // let nay = op.btoi(op.substring(data, 17, 25))
+    dup
+    substring 17 25
+    btoi
+    bury 12
+    // contract.algo.ts:133
+    // let abstain = op.btoi(op.substring(data, 25, 33))
+    dup
+    substring 25 33
+    btoi
+    bury 14
+    // contract.algo.ts:134
+    // const expiration = op.btoi(op.substring(data, 33, 41))
+    dup
+    substring 33 41
+    btoi
+    dup
+    cover 2
+    bury 14
+    // contract.algo.ts:135
+    // let voteMask = op.btoi(op.substring(data, 41, 49))
+    substring 41 49
+    btoi
+    dup
+    cover 2
+    bury 11
+    // contract.algo.ts:137
+    // assert(Global.latestTimestamp <= expiration, 'Voting window has already expired')
+    global LatestTimestamp
+    >=
+    assert // Voting window has already expired
+    // contract.algo.ts:139
+    // const voterBit = op.shl(Uint64(1), voterIndex)
+    intc_0 // 1
+    dig 3
+    shl
+    dup
+    bury 10
+    // contract.algo.ts:140
+    // assert((voteMask & voterBit) === Uint64(0), 'Double-voting rejected: Wallet already voted')
+    &
+    !
+    assert // Double-voting rejected: Wallet already voted
+    // contract.algo.ts:142
+    // if (voteType === Uint64(1)) {
+    dig 4
+    intc_0 // 1
+    ==
+    bz castVote_else_body@9
+    // contract.algo.ts:143
+    // yea = yea + Uint64(1)
+    dig 6
+    intc_0 // 1
+    +
+    bury 7
+
+castVote_after_if_else@16:
+    // contract.algo.ts:152
+    // voteMask = voteMask | voterBit
+    dig 8
+    dig 8
+    |
+    // contract.algo.ts:153
+    // const totalVotesCast: uint64 = yea + nay + abstain
+    dig 7
+    dup
+    dig 13
+    dup
+    cover 3
+    +
+    dig 16
+    dup
+    cover 3
+    +
+    // contract.algo.ts:158
+    // op.itob(proposalId),
+    dig 14
+    itob
+    // contract.algo.ts:160
+    // op.itob(yea),
+    uncover 2
+    itob
+    // contract.algo.ts:162
+    // op.itob(nay),
+    uncover 4
+    itob
+    // contract.algo.ts:164
+    // op.itob(abstain),
+    uncover 4
+    itob
+    // contract.algo.ts:165
+    // op.concat(op.itob(expiration), op.itob(voteMask))
+    dig 17
+    itob
+    uncover 6
+    itob
+    concat
+    // contract.algo.ts:163-166
+    // op.concat(
+    //   op.itob(abstain),
+    //   op.concat(op.itob(expiration), op.itob(voteMask))
+    // )
+    concat
+    // contract.algo.ts:161-167
+    // op.concat(
+    //   op.itob(nay),
+    //   op.concat(
+    //     op.itob(abstain),
+    //     op.concat(op.itob(expiration), op.itob(voteMask))
+    //   )
+    // )
+    concat
+    // contract.algo.ts:159-168
+    // op.concat(
+    //   op.itob(yea),
+    //   op.concat(
+    //     op.itob(nay),
+    //     op.concat(
+    //       op.itob(abstain),
+    //       op.concat(op.itob(expiration), op.itob(voteMask))
+    //     )
+    //   )
+    // )
+    concat
+    // contract.algo.ts:157-169
+    // op.concat(
+    //   op.itob(proposalId),
+    //   op.concat(
+    //     op.itob(yea),
+    //     op.concat(
+    //       op.itob(nay),
+    //       op.concat(
+    //         op.itob(abstain),
+    //         op.concat(op.itob(expiration), op.itob(voteMask))
+    //       )
+    //     )
+    //   )
+    // )
+    concat
+    // contract.algo.ts:156
+    // Bytes('\x01'),
+    bytec_2 // "\x01"
+    // contract.algo.ts:155-170
+    // const updatedPayload = op.concat(
+    //   Bytes('\x01'),
+    //   op.concat(
+    //     op.itob(proposalId),
+    //     op.concat(
+    //       op.itob(yea),
+    //       op.concat(
+    //         op.itob(nay),
+    //         op.concat(
+    //           op.itob(abstain),
+    //           op.concat(op.itob(expiration), op.itob(voteMask))
+    //         )
+    //       )
+    //     )
+    //   )
+    // )
+    swap
+    concat
+    // contract.algo.ts:172
+    // this.slots(slot).value = updatedPayload
+    dig 5
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // contract.algo.ts:113
+    // const whitelist = [...this.whitelistBox('whitelist').value]
+    bytec_3 // "whitelist"
+    // contract.algo.ts:174
+    // if (totalVotesCast === Uint64(whitelist.length)) {
+    intc_1 // 0
+    intc_3 // 2
+    box_extract
+    btoi
+    ==
+    bz castVote_after_if_else@18
+    // contract.algo.ts:175
+    // this.finalizeAndClear(slot, proposalId, yea, nay, abstain, Bytes('All whitelisted wallets voted'), Bytes('R'))
+    dig 5
+    dig 10
+    dig 8
+    dig 13
+    dig 16
+    pushbytess "All whitelisted wallets voted" "R" // "All whitelisted wallets voted", "R"
+    callsub finalizeAndClear
+
+castVote_after_if_else@18:
+    // contract.algo.ts:107
+    // @abimethod()
+    intc_0 // 1
+    return
+
+castVote_else_body@9:
+    // contract.algo.ts:144
+    // } else if (voteType === Uint64(2)) {
+    dig 4
+    intc_3 // 2
+    ==
+    bz castVote_else_body@11
+    // contract.algo.ts:145
+    // nay = nay + Uint64(1)
+    dig 10
+    intc_0 // 1
+    +
+    bury 11
+    b castVote_after_if_else@16
+
+castVote_else_body@11:
+    // contract.algo.ts:146
+    // } else if (voteType === Uint64(3)) {
+    dig 4
+    pushint 3 // 3
+    ==
+    assert // Invalid vote type: Use 1=Yea, 2=Nay, 3=Abstain
+    // contract.algo.ts:147
+    // abstain = abstain + Uint64(1)
+    dig 12
+    intc_0 // 1
+    +
+    bury 13
+    b castVote_after_if_else@16
+
+castVote_after_if_else@5:
+    // contract.algo.ts:117
+    // for (let i: uint64 = 0; i < whitelist.length; i++) {
+    dup
+    intc_0 // 1
+    +
+    bury 1
+    b castVote_while_top@2
+
+
+// contract.algo.ts::VoiGovernance.resolveProposal[routing]() -> void:
+resolveProposal:
+    // contract.algo.ts:179
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    uncover 2
+    // contract.algo.ts:181
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can resolve proposals')
+    txn Sender
+    intc_1 // 0
+    // contract.algo.ts:44
+    // admin = GlobalState<Account>({ initialValue: Txn.sender })
+    bytec_0 // "admin"
+    // contract.algo.ts:181
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can resolve proposals')
+    app_global_get_ex
+    assert // check GlobalState exists
+    ==
+    assert // Unauthorized: Only admin can resolve proposals
+    // contract.algo.ts:182
+    // assert(slot < this.maxSlots.value, 'Invalid slot index')
+    intc_1 // 0
+    // contract.algo.ts:47
+    // maxSlots = GlobalState<uint64>({ initialValue: Uint64(10) })
+    bytec_1 // "maxSlots"
+    // contract.algo.ts:182
+    // assert(slot < this.maxSlots.value, 'Invalid slot index')
+    app_global_get_ex
+    assert // check GlobalState exists
+    dig 1
+    >
+    assert // Invalid slot index
+    // contract.algo.ts:183
+    // assert(this.slots(slot).exists, 'Proposal slot not initialized')
+    itob
+    // contract.algo.ts:50
+    // slots = BoxMap<uint64, bytes>({ keyPrefix: 'slot_' })
+    bytec 4 // "slot_"
+    swap
+    concat
+    // contract.algo.ts:183
+    // assert(this.slots(slot).exists, 'Proposal slot not initialized')
+    dup
+    box_len
+    bury 1
+    assert // Proposal slot not initialized
+    // contract.algo.ts:185
+    // const data = this.slots(slot).value
+    box_get
+    pop
+    // contract.algo.ts:186
+    // assert(op.substring(data, 0, 1) === Bytes('\x01'), 'Proposal is not active')
+    dup
+    substring 0 1
+    bytec_2 // "\x01"
+    ==
+    assert // Proposal is not active
+    // contract.algo.ts:188
+    // const proposalId = op.btoi(op.substring(data, 1, 9))
+    dup
+    substring 1 9
+    btoi
+    cover 2
+    // contract.algo.ts:189
+    // const yea = op.btoi(op.substring(data, 9, 17))
+    dup
+    substring 9 17
+    btoi
+    cover 2
+    // contract.algo.ts:190
+    // const nay = op.btoi(op.substring(data, 17, 25))
+    dup
+    substring 17 25
+    btoi
+    cover 2
+    // contract.algo.ts:191
+    // const abstain = op.btoi(op.substring(data, 25, 33))
+    substring 25 33
+    btoi
+    swap
+    // contract.algo.ts:193
+    // assert(resolution === Uint64(1) || resolution === Uint64(2), 'Invalid resolution: Use 1=Approve, 2=Reject')
+    intc_0 // 1
+    ==
+    dup
+    bnz resolveProposal_bool_true@3
+    dig 5
+    intc_3 // 2
+    ==
+    bz resolveProposal_bool_false@4
+
+resolveProposal_bool_true@3:
+    intc_0 // 1
+
+resolveProposal_bool_merge@5:
+    // contract.algo.ts:193
+    // assert(resolution === Uint64(1) || resolution === Uint64(2), 'Invalid resolution: Use 1=Approve, 2=Reject')
+    assert // Invalid resolution: Use 1=Approve, 2=Reject
+    // contract.algo.ts:195
+    // const status = resolution === Uint64(1) ? Bytes('A') : Bytes('R')
+    pushbytess "R" "A" // "R", "A"
+    dig 2
+    select
+    // contract.algo.ts:196
+    // this.finalizeAndClear(slot, proposalId, yea, nay, abstain, Bytes('Resolved by Admin'), status)
+    dig 7
+    dig 6
+    dig 6
+    dig 6
+    dig 6
+    pushbytes "Resolved by Admin"
+    uncover 6
+    callsub finalizeAndClear
+    // contract.algo.ts:179
+    // @abimethod()
+    intc_0 // 1
+    return
+
+resolveProposal_bool_false@4:
+    intc_1 // 0
+    b resolveProposal_bool_merge@5
+
+
+// contract.algo.ts::VoiGovernance.resolveExpiredProposal[routing]() -> void:
+resolveExpiredProposal:
+    // contract.algo.ts:199
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 2
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    // contract.algo.ts:201
+    // assert(slot < this.maxSlots.value, 'Invalid slot index')
+    intc_1 // 0
+    // contract.algo.ts:47
+    // maxSlots = GlobalState<uint64>({ initialValue: Uint64(10) })
+    bytec_1 // "maxSlots"
+    // contract.algo.ts:201
+    // assert(slot < this.maxSlots.value, 'Invalid slot index')
+    app_global_get_ex
+    assert // check GlobalState exists
+    dig 1
+    >
+    assert // Invalid slot index
+    // contract.algo.ts:202
+    // assert(this.slots(slot).exists, 'Proposal slot not initialized')
+    dup
+    itob
+    // contract.algo.ts:50
+    // slots = BoxMap<uint64, bytes>({ keyPrefix: 'slot_' })
+    bytec 4 // "slot_"
+    swap
+    concat
+    // contract.algo.ts:202
+    // assert(this.slots(slot).exists, 'Proposal slot not initialized')
+    dup
+    box_len
+    bury 1
+    assert // Proposal slot not initialized
+    // contract.algo.ts:204
+    // const data = this.slots(slot).value
+    box_get
+    pop
+    // contract.algo.ts:205
+    // assert(op.substring(data, 0, 1) === Bytes('\x01'), 'Proposal is not active')
+    dup
+    substring 0 1
+    bytec_2 // "\x01"
+    ==
+    assert // Proposal is not active
+    // contract.algo.ts:207
+    // const expiration = op.btoi(op.substring(data, 33, 41))
+    dup
+    substring 33 41
+    btoi
+    // contract.algo.ts:208
+    // assert(Global.latestTimestamp > expiration, 'Proposal voting window is still open')
+    global LatestTimestamp
+    <
+    assert // Proposal voting window is still open
+    // contract.algo.ts:210
+    // const proposalId = op.btoi(op.substring(data, 1, 9))
+    dup
+    substring 1 9
+    btoi
+    // contract.algo.ts:211
+    // const yea = op.btoi(op.substring(data, 9, 17))
+    dig 1
+    substring 9 17
+    btoi
+    // contract.algo.ts:212
+    // const nay = op.btoi(op.substring(data, 17, 25))
+    dig 2
+    substring 17 25
+    btoi
+    // contract.algo.ts:213
+    // const abstain = op.btoi(op.substring(data, 25, 33))
+    uncover 3
+    substring 25 33
+    btoi
+    // contract.algo.ts:215
+    // this.finalizeAndClear(slot, proposalId, yea, nay, abstain, Bytes('Expired resolved'), Bytes('E'))
+    pushbytess "Expired resolved" "E" // "Expired resolved", "E"
+    callsub finalizeAndClear
+    // contract.algo.ts:199
+    // @abimethod()
+    intc_0 // 1
+    return
+
+
+// contract.algo.ts::VoiGovernance.terminateProposal[routing]() -> void:
+terminateProposal:
+    // contract.algo.ts:218
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_3 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // contract.algo.ts:220
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can terminate proposals')
+    txn Sender
+    intc_1 // 0
+    // contract.algo.ts:44
+    // admin = GlobalState<Account>({ initialValue: Txn.sender })
+    bytec_0 // "admin"
+    // contract.algo.ts:220
+    // assert(Txn.sender === this.admin.value, 'Unauthorized: Only admin can terminate proposals')
+    app_global_get_ex
+    assert // check GlobalState exists
+    ==
+    assert // Unauthorized: Only admin can terminate proposals
+    // contract.algo.ts:221
+    // assert(slot < this.maxSlots.value, 'Invalid slot index')
+    intc_1 // 0
+    // contract.algo.ts:47
+    // maxSlots = GlobalState<uint64>({ initialValue: Uint64(10) })
+    bytec_1 // "maxSlots"
+    // contract.algo.ts:221
+    // assert(slot < this.maxSlots.value, 'Invalid slot index')
+    app_global_get_ex
+    assert // check GlobalState exists
+    dig 2
+    >
+    assert // Invalid slot index
+    // contract.algo.ts:222
+    // assert(this.slots(slot).exists, 'Proposal slot not initialized')
+    dig 1
+    itob
+    // contract.algo.ts:50
+    // slots = BoxMap<uint64, bytes>({ keyPrefix: 'slot_' })
+    bytec 4 // "slot_"
+    swap
+    concat
+    // contract.algo.ts:222
+    // assert(this.slots(slot).exists, 'Proposal slot not initialized')
+    dup
+    box_len
+    bury 1
+    assert // Proposal slot not initialized
+    // contract.algo.ts:224
+    // const data = this.slots(slot).value
+    box_get
+    pop
+    // contract.algo.ts:225
+    // assert(op.substring(data, 0, 1) === Bytes('\x01'), 'Proposal slot is not active')
+    dup
+    substring 0 1
+    bytec_2 // "\x01"
+    ==
+    assert // Proposal slot is not active
+    // contract.algo.ts:227
+    // const proposalId = op.btoi(op.substring(data, 1, 9))
+    dup
+    substring 1 9
+    btoi
+    // contract.algo.ts:228
+    // const yea = op.btoi(op.substring(data, 9, 17))
+    dig 1
+    substring 9 17
+    btoi
+    // contract.algo.ts:229
+    // const nay = op.btoi(op.substring(data, 17, 25))
+    dig 2
+    substring 17 25
+    btoi
+    // contract.algo.ts:230
+    // const abstain = op.btoi(op.substring(data, 25, 33))
+    uncover 3
+    substring 25 33
+    btoi
+    // contract.algo.ts:232
+    // this.finalizeAndClear(slot, proposalId, yea, nay, abstain, op.concat(Bytes('Terminated by Admin: '), reason), Bytes('T'))
+    pushbytes "Terminated by Admin: "
+    uncover 5
+    concat
+    pushbytes "T"
+    callsub finalizeAndClear
+    // contract.algo.ts:218
+    // @abimethod()
+    intc_0 // 1
+    return
+
+
+// contract.algo.ts::VoiGovernance.finalizeAndClear(slot: uint64, proposalId: uint64, yea: uint64, nay: uint64, abstain: uint64, reason: bytes, status: bytes) -> void:
+finalizeAndClear:
+    // contract.algo.ts:235-243
+    // private finalizeAndClear(
+    //   slot: uint64,
+    //   proposalId: uint64,
+    //   yea: uint64,
+    //   nay: uint64,
+    //   abstain: uint64,
+    //   reason: bytes,
+    //   status: bytes
+    // ): void {
+    proto 7 0
+    // contract.algo.ts:247
+    // op.concat(padNumber(proposalId, 3),
+    frame_dig -6
+    pushint 3 // 3
+    callsub padNumber
+    // contract.algo.ts:249
+    // op.concat(padNumber(yea, 1),
+    frame_dig -5
+    intc_0 // 1
+    callsub padNumber
+    // contract.algo.ts:251
+    // op.concat(padNumber(nay, 1),
+    frame_dig -4
+    intc_0 // 1
+    callsub padNumber
+    // contract.algo.ts:253
+    // op.concat(padNumber(abstain, 1),
+    frame_dig -3
+    intc_0 // 1
+    callsub padNumber
+    // contract.algo.ts:254
+    // op.concat(Bytes('|VF:'), status)
+    pushbytes "|VF:"
+    frame_dig -1
+    concat
+    // contract.algo.ts:253-255
+    // op.concat(padNumber(abstain, 1),
+    //   op.concat(Bytes('|VF:'), status)
+    // )
+    concat
+    // contract.algo.ts:252
+    // op.concat(Bytes('|A:'),
+    pushbytes "|A:"
+    // contract.algo.ts:252-256
+    // op.concat(Bytes('|A:'),
+    //   op.concat(padNumber(abstain, 1),
+    //     op.concat(Bytes('|VF:'), status)
+    //   )
+    // )
+    swap
+    concat
+    // contract.algo.ts:251-257
+    // op.concat(padNumber(nay, 1),
+    //   op.concat(Bytes('|A:'),
+    //     op.concat(padNumber(abstain, 1),
+    //       op.concat(Bytes('|VF:'), status)
+    //     )
+    //   )
+    // )
+    concat
+    // contract.algo.ts:250
+    // op.concat(Bytes('|N:'),
+    pushbytes "|N:"
+    // contract.algo.ts:250-258
+    // op.concat(Bytes('|N:'),
+    //   op.concat(padNumber(nay, 1),
+    //     op.concat(Bytes('|A:'),
+    //       op.concat(padNumber(abstain, 1),
+    //         op.concat(Bytes('|VF:'), status)
+    //       )
+    //     )
+    //   )
+    // )
+    swap
+    concat
+    // contract.algo.ts:249-259
+    // op.concat(padNumber(yea, 1),
+    //   op.concat(Bytes('|N:'),
+    //     op.concat(padNumber(nay, 1),
+    //       op.concat(Bytes('|A:'),
+    //         op.concat(padNumber(abstain, 1),
+    //           op.concat(Bytes('|VF:'), status)
+    //         )
+    //       )
+    //     )
+    //   )
+    // )
+    concat
+    // contract.algo.ts:248
+    // op.concat(Bytes('|Y:'),
+    pushbytes "|Y:"
+    // contract.algo.ts:248-260
+    // op.concat(Bytes('|Y:'),
+    //   op.concat(padNumber(yea, 1),
+    //     op.concat(Bytes('|N:'),
+    //       op.concat(padNumber(nay, 1),
+    //         op.concat(Bytes('|A:'),
+    //           op.concat(padNumber(abstain, 1),
+    //             op.concat(Bytes('|VF:'), status)
+    //           )
+    //         )
+    //       )
+    //     )
+    //   )
+    // )
+    swap
+    concat
+    // contract.algo.ts:247-261
+    // op.concat(padNumber(proposalId, 3),
+    //   op.concat(Bytes('|Y:'),
+    //     op.concat(padNumber(yea, 1),
+    //       op.concat(Bytes('|N:'),
+    //         op.concat(padNumber(nay, 1),
+    //           op.concat(Bytes('|A:'),
+    //             op.concat(padNumber(abstain, 1),
+    //               op.concat(Bytes('|VF:'), status)
+    //             )
+    //           )
+    //         )
+    //       )
+    //     )
+    //   )
+    // )
+    concat
+    // contract.algo.ts:246
+    // Bytes('P:'),
+    pushbytes "P:"
+    // contract.algo.ts:245-262
+    // log(op.concat(
+    //   Bytes('P:'),
+    //   op.concat(padNumber(proposalId, 3),
+    //     op.concat(Bytes('|Y:'),
+    //       op.concat(padNumber(yea, 1),
+    //         op.concat(Bytes('|N:'),
+    //           op.concat(padNumber(nay, 1),
+    //             op.concat(Bytes('|A:'),
+    //               op.concat(padNumber(abstain, 1),
+    //                 op.concat(Bytes('|VF:'), status)
+    //               )
+    //             )
+    //           )
+    //         )
+    //       )
+    //     )
+    //   )
+    // ))
+    swap
+    concat
+    log
+    // contract.algo.ts:281
+    // this.slots(slot).delete()
+    frame_dig -7
+    itob
+    // contract.algo.ts:50
+    // slots = BoxMap<uint64, bytes>({ keyPrefix: 'slot_' })
+    bytec 4 // "slot_"
+    swap
+    concat
+    // contract.algo.ts:281
+    // this.slots(slot).delete()
+    box_del
+    pop
+    retsub
