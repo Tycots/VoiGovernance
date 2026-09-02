@@ -159,7 +159,7 @@ function Layout() {
           APP <strong>{APP_ID}</strong>
         </span>
         <a
-          href={`https://explorer.voi.network/explorer/application/${APP_ID}/transactions`}
+          href="https://explorer.voi.network/explorer/application/50218352/transactions"
           target="_blank"
           rel="noreferrer"
         >
@@ -172,7 +172,7 @@ function Layout() {
       <footer>
         <span>Voi Council Voting</span>
         <a
-          href={`https://explorer.voi.network/explorer/application/${APP_ID}/transactions`}
+          href="https://explorer.voi.network/explorer/application/50218352/transactions"
           target="_blank"
           rel="noreferrer"
         >
